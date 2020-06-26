@@ -109,6 +109,7 @@ func runAuth() {
 
 func printUsage() {
 	log.Printf("Usage: %s {service|auth}", os.Args[0])
+	os.Exit(1)
 }
 
 func main() {

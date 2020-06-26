@@ -6,21 +6,15 @@ For example, you can configure this program so that prints every attachment rece
 
 ## Installation
 
-Clone this repository and execute (with golang installed):
+Clone this repository and build:
 
 ```bash
-go install
+go build
 ```
 
 ## Configuration
 
-Find the program path with the following command and paste inside the credentials file downloaded from the Google API platform:
-
-```bash
-which auto-printer
-```
-
-Then authenticate using (following the instructions):
+Authenticate using (following the instructions):
 
 ```bash
 auto-printer auth
@@ -41,7 +35,7 @@ crontab -e
 And finally configure the process however you want, for example:
 
 ```bash
-0,30 * * * * auto-printer service >> /home/user/auto-printer.log
+0,30 * * * *  cd /path/to/auto-printer && ./auto-printer service
 ```
 
 ## Configuration file
