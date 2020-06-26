@@ -14,7 +14,7 @@ go build
 
 ## Configuration
 
-Download the credentials.json from your Google dev account and paste in the program folder.
+Download the credentials.json from your Google dev account and paste it in the program folder.
 
 Authenticate using (following the instructions):
 
