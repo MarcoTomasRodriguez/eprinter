@@ -9,7 +9,7 @@ import (
 
 const credentialsFilename = "credentials.json"
 
-var scopes = []string{gmail.GmailInsertScope, gmail.GmailModifyScope, gmail.GmailLabelsScope, gmail.GmailReadonlyScope}
+var scopes = []string{gmail.GmailLabelsScope, gmail.GmailReadonlyScope, gmail.GmailModifyScope}
 
 // Retrieves the configuration from the credentials file.
 func GetConfiguration() (*oauth2.Config, error) {
