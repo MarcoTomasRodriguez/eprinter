@@ -20,19 +20,19 @@ Authenticate using (following the instructions):
 auto-printer auth
 ```
 
-Then configure the program with the following command (writing in your own config):
+Configure the program with the following command (writing in your own config):
 
 ```bash
 sudo nano /etc/auto-printer.toml
 ```
 
-Then create a crontab using:
+Create a crontab using:
 
 ```bash
 crontab -e
 ```
 
-And finally configure the process however you want, for example:
+Configure the process however you want, for example:
 
 ```bash
 0,30 * * * *  cd /path/to/auto-printer && ./auto-printer service
@@ -40,7 +40,7 @@ And finally configure the process however you want, for example:
 
 ## Configuration file
 
-The configuration file is located at /etc/auto-printer.toml
+The configuration file should be located at /etc/auto-printer.toml
 
 The structure of this file is the following:
 
