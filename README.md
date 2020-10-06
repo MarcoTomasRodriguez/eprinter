@@ -6,10 +6,10 @@ For example, you can configure this program so that prints every attachment rece
 
 ## Installation
 
-Clone this repository and build:
+Clone this repository and install:
 
 ```bash
-go build
+go install
 ```
 
 ## Configuration
@@ -25,7 +25,7 @@ auto-printer auth
 Configure the program with the following command (writing in your own config):
 
 ```bash
-sudo nano /etc/auto-printer.toml
+sudo nano /$HOME/auto-printer/config.toml
 ```
 
 Create a crontab using:
@@ -37,7 +37,7 @@ crontab -e
 Configure the process however you want, for example:
 
 ```bash
-0,30 * * * *  cd /path/to/auto-printer && ./auto-printer service
+0,30 * * * *  auto-printer service
 ```
 
 ## Configuration file
