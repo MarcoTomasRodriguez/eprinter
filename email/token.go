@@ -1,18 +1,16 @@
-package auth
+package email
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/MarcoTomasRodriguez/auto-printer/config"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"log"
 	"os"
 )
 
-// Token file location
-const tokenFilename = "token.json"
-
-// Gets a token instance from the token file
+// GetToken gets a token instance from the token file
 func GetToken() *oauth2.Token {
 	token, err := getTokenFromFile()
 	if err != nil {
@@ -22,15 +20,13 @@ func GetToken() *oauth2.Token {
 	return token
 }
 
-// Saves the token into the token file
+// UpdateToken saves the token into the token file
 func UpdateToken(config *oauth2.Config) {
 	saveToken(getTokenFromWeb(config))
 }
 
-// Request a token from the web, then returns the retrieved token.
+// getTokenFromWeb requests a token from the web, then returns the retrieved token
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	var err error
-	var token *oauth2.Token
 	var authCode string
 
 	// Gets the auth url
@@ -41,12 +37,12 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 		"authorization code: \n%v\n", authURL)
 
 	// Reads token from stdin
-	if _, err = fmt.Scan(&authCode); err != nil {
+	if _, err := fmt.Scan(&authCode); err != nil {
 		log.Fatalf("Unable to read authorization code: %v", err)
 	}
 
 	// Converts the auth code into a valid token
-	token, err = config.Exchange(context.Background(), authCode)
+	token, err := config.Exchange(context.Background(), authCode)
 	if err != nil {
 		log.Fatalf("Unable to retrieve token from web: %v", err)
 	}
@@ -54,14 +50,10 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	return token
 }
 
-// Retrieves a token from a local fs.
+// getTokenFromFile retrieves a token from a local utils
 func getTokenFromFile() (*oauth2.Token, error) {
-	var file *os.File
-	var token = &oauth2.Token{}
-	var err error
-
 	// Opens the token file
-	file, err = os.Open(tokenFilename)
+	file, err := os.Open(config.TokenFilename)
 	if err != nil {
 		return nil, err
 	}
@@ -69,21 +61,18 @@ func getTokenFromFile() (*oauth2.Token, error) {
 	defer file.Close()
 
 	// Decodes the token
-	token = &oauth2.Token{}
+	token := &oauth2.Token{}
 	err = json.NewDecoder(file).Decode(token)
 
 	return token, err
 }
 
-// Saves a token into a file
+// saveToken saves a token into a file
 func saveToken(token *oauth2.Token) {
-	var file *os.File
-	var err error
-
-	log.Printf("Saving credentials in: %s\n", tokenFilename)
+	log.Printf("Saving credentials in: %s\n", config.TokenFilename)
 
 	// Opens the token file with creation perms
-	file, err = os.OpenFile(tokenFilename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	file, err := os.OpenFile(config.TokenFilename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		log.Fatalf("Unable to cache oauth token: %v", err)
 	}

@@ -1,27 +1,45 @@
-package conf
+package config
 
 import (
 	"errors"
 	"github.com/badoux/checkmail"
 	"github.com/pelletier/go-toml"
+	"google.golang.org/api/gmail/v1"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
+// ProgramFolder is the folder where the program (and the user) stores his information
+var ProgramFolder = filepath.Join(os.Getenv("HOME"), ".auto-printer")
+
+// ConfigFilename is the editable configuration file
+var ConfigFilename = filepath.Join(ProgramFolder, "config.toml")
+
+// TokenFilename is the token file generated when auth occurs
+var TokenFilename = filepath.Join(ProgramFolder, "token.json")
+
+// CredentialsFilename is the credentials file downloaded by the user required for the program to work
+var CredentialsFilename = filepath.Join(ProgramFolder, "credentials.json")
+
+// AccessScopes are the different Gmail API permissions granted by the user
+var AccessScopes = []string{gmail.GmailLabelsScope, gmail.GmailReadonlyScope, gmail.GmailModifyScope}
+
+
+// Config is the editable configuration struct
 type Config struct {
 	AllowedEmails        []string `toml:"allowed_emails"`
 	AllowedEmailSubjects []string `toml:"allowed_email_subjects"`
 	PrintedLabelName     string   `toml:"printed_label_name"`
 }
 
-const configFilename = "/etc/auto-printer.toml"
-
-// Loads the configuration
+// LoadConfig loads the configuration
 func LoadConfig() *Config {
 	config := &Config{}
 
-	file, err := ioutil.ReadFile(configFilename)
+	file, err := ioutil.ReadFile(ConfigFilename)
 	if err != nil {
 		log.Fatalf("Unable to read configuration file: %v", err)
 	}
@@ -33,7 +51,7 @@ func LoadConfig() *Config {
 	return config
 }
 
-// Checks whether the allowed emails field in the configuration is valid
+// ValidateAllowedEmails checks whether the allowed emails field in the configuration is valid
 func (config *Config) ValidateAllowedEmails() error {
 	if len(config.AllowedEmails) == 0 {
 		return errors.New("allowed emails should never be empty")
@@ -48,7 +66,7 @@ func (config *Config) ValidateAllowedEmails() error {
 	return nil
 }
 
-// Checks whether the allowed email subjects field in the configuration is valid
+// ValidateAllowedEmailSubjects checks whether the allowed email subjects field in the configuration is valid
 func (config *Config) ValidateAllowedEmailSubjects() error {
 	if len(config.AllowedEmailSubjects) == 0 {
 		return errors.New("allowed email subjects should never be empty")
@@ -66,7 +84,7 @@ func (config *Config) ValidateAllowedEmailSubjects() error {
 	return nil
 }
 
-// Checks whether the printed label name in the configuration is valid
+// ValidatePrintedLabelName checks whether the printed label name in the configuration is valid
 func (config *Config) ValidatePrintedLabelName() error {
 	if len(strings.TrimSpace(config.PrintedLabelName)) == 0 {
 		return errors.New("printed label name should never be empty")

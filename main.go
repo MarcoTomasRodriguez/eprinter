@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/MarcoTomasRodriguez/auto-printer/auth"
+	"flag"
 	"github.com/MarcoTomasRodriguez/auto-printer/email"
 	"golang.org/x/net/context"
 	"google.golang.org/api/gmail/v1"
@@ -15,13 +15,13 @@ func runService() {
 	ctx := context.Background()
 
 	// Gets the configuration from the credentials file
-	configuration, err := auth.GetConfiguration()
+	configuration, err := email.GetConfiguration()
 	if err != nil {
-		log.Fatalf("Unable to parse client secret fs to conf: %v", err)
+		log.Fatalf("Unable to parse client secret utils to config: %v", err)
 	}
 
 	// Gets the token
-	token := auth.GetToken()
+	token := email.GetToken()
 
 	// Gets the service instance
 	service, err := gmail.NewService(ctx, option.WithTokenSource(configuration.TokenSource(ctx, token)))
@@ -98,13 +98,13 @@ func runService() {
 
 func runAuth() {
 	// Gets the configuration from the credentials file
-	configuration, err := auth.GetConfiguration()
+	configuration, err := email.GetConfiguration()
 	if err != nil {
 		log.Fatalf("Unable to parse client secret to configuration: %v", err)
 	}
 
 	// Updates the token
-	auth.UpdateToken(configuration)
+	email.UpdateToken(configuration)
 }
 
 func printUsage() {
@@ -113,7 +113,7 @@ func printUsage() {
 }
 
 func main() {
-	args := os.Args
+	args := flag.Args()
 
 	if len(args) < 2 {
 		printUsage()
