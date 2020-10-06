@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"github.com/MarcoTomasRodriguez/auto-printer/email"
 	"golang.org/x/net/context"
 	"google.golang.org/api/gmail/v1"
@@ -113,7 +112,7 @@ func printUsage() {
 }
 
 func main() {
-	args := flag.Args()
+	args := os.Args
 
 	if len(args) < 2 {
 		printUsage()
