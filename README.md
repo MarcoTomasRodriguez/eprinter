@@ -42,14 +42,27 @@ Configure the process however you want, for example:
 
 ## Configuration file
 
-The configuration file should be located at ~/.auto-printer/config.toml
+The configuration file is located at $HOME/.auto-printer/config.toml
 
-The structure of this file is the following:
+### Structure
 
 ```
 allowed_emails []string
 allowed_email_subjects []string
 printed_label_name string
+```
+
+### Example
+
+```toml
+# Accept emails comming from "myemail@provider.com" and "someemail@provider.com".
+allowed_emails = [ "myemail@provider.com", "someemail@provider.com" ]
+
+# Accept emails with the title "Print", "Drucken" or "Imprimir".
+allowed_email_subjects = [ "Print", "Drucken", "Imprimir" ]
+
+# After the email was printed, add the label "printed" so we do no print it twice.
+printed_label_name = "printed"
 ```
 
 **Note:** Subjects cannot have spaces.
