@@ -25,7 +25,7 @@ auto-printer auth
 Configure the program with the following command (writing in your own config):
 
 ```bash
-sudo nano /$HOME/auto-printer/config.toml
+sudo nano /$HOME/.auto-printer/config.toml
 ```
 
 Create a crontab using:
