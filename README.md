@@ -25,7 +25,7 @@ auto-printer auth
 Configure the program with the following command (writing in your own config):
 
 ```bash
-sudo nano /$HOME/.auto-printer/config.toml
+sudo nano ~/.auto-printer/config.toml
 ```
 
 Create a crontab using:
@@ -42,7 +42,7 @@ Configure the process however you want, for example:
 
 ## Configuration file
 
-The configuration file should be located at /etc/auto-printer.toml
+The configuration file should be located at ~/.auto-printer/config.toml
 
 The structure of this file is the following:
 
