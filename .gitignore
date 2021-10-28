@@ -1,4 +1,5 @@
 .idea
+.DS_STORE
 credentials.json
 token.json
 auto-printer
