@@ -2,76 +2,47 @@ package config
 
 import (
 	"errors"
-	"github.com/badoux/checkmail"
-	"github.com/pelletier/go-toml"
-	"google.golang.org/api/gmail/v1"
-	"io/ioutil"
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/badoux/checkmail"
+	"github.com/spf13/viper"
+	"google.golang.org/api/gmail/v1"
 )
 
-// ProgramFolder is the folder where the program (and the user) stores his information
-var ProgramFolder = filepath.Join(os.Getenv("HOME"), ".auto-printer")
+// Configuration defines the behavior of the application.
+type Configuration struct {
+	// ProgramFolder is the folder used to store program data.
+	ProgramFolder string `mapstructure:"program_folder"`
 
-// ConfigFilename is the editable configuration file
-var ConfigFilename = filepath.Join(ProgramFolder, "config.toml")
+	// AllowedEmails are the sender emails that the program will accept.
+	AllowedEmails []string `mapstructure:"allowed_emails"`
 
-// TokenFilename is the token file generated when auth occurs
-var TokenFilename = filepath.Join(ProgramFolder, "token.json")
+	// AllowedEmailSubjects are the subjects that the program will accept.
+	AllowedEmailSubjects []string `mapstructure:"allowed_email_subjects"`
 
-// CredentialsFilename is the credentials file downloaded by the user required for the program to work
-var CredentialsFilename = filepath.Join(ProgramFolder, "credentials.json")
-
-// AccessScopes are the different Gmail API permissions granted by the user
-var AccessScopes = []string{gmail.GmailLabelsScope, gmail.GmailReadonlyScope, gmail.GmailModifyScope}
-
-
-// Config is the editable configuration struct
-type Config struct {
-	AllowedEmails        []string `toml:"allowed_emails"`
-	AllowedEmailSubjects []string `toml:"allowed_email_subjects"`
-	PrintedLabelName     string   `toml:"printed_label_name"`
+	// PrintedLabel is the label used to mark emails as printed.
+	PrintedLabel string `mapstructure:"printed_label"`
 }
 
-// LoadConfig loads the configuration
-func LoadConfig() *Config {
-	config := &Config{}
-
-	file, err := ioutil.ReadFile(ConfigFilename)
-	if err != nil {
-		log.Fatalf("Unable to read configuration file: %v", err)
-	}
-
-	if err = toml.Unmarshal(file, config); err != nil {
-		log.Fatalf("Unable to parse configuration file: %v", err)
-	}
-
-	return config
-}
-
-// ValidateAllowedEmails checks whether the allowed emails field in the configuration is valid
-func (config *Config) ValidateAllowedEmails() error {
+// Validate validates the config.
+func (config *Configuration) Validate() error {
+	// Validate AllowedEmails.
 	if len(config.AllowedEmails) == 0 {
 		return errors.New("allowed emails should never be empty")
 	}
-
 	for _, allowedEmail := range config.AllowedEmails {
 		if err := checkmail.ValidateFormat(allowedEmail); err != nil {
 			return err
 		}
 	}
 
-	return nil
-}
-
-// ValidateAllowedEmailSubjects checks whether the allowed email subjects field in the configuration is valid
-func (config *Config) ValidateAllowedEmailSubjects() error {
+	// Validate AllowedEmailSubjects.
 	if len(config.AllowedEmailSubjects) == 0 {
 		return errors.New("allowed email subjects should never be empty")
 	}
-
 	for _, allowedEmailTitle := range config.AllowedEmailSubjects {
 		if len(strings.TrimSpace(allowedEmailTitle)) == 0 {
 			return errors.New("allowed email subject should never be empty")
@@ -81,16 +52,69 @@ func (config *Config) ValidateAllowedEmailSubjects() error {
 		}
 	}
 
-	return nil
-}
-
-// ValidatePrintedLabelName checks whether the printed label name in the configuration is valid
-func (config *Config) ValidatePrintedLabelName() error {
-	if len(strings.TrimSpace(config.PrintedLabelName)) == 0 {
+	// Validate PrintedLabelName.
+	if len(strings.TrimSpace(config.PrintedLabel)) == 0 {
 		return errors.New("printed label name should never be empty")
 	}
 
 	return nil
 }
 
+// TokenFilename returns the path to the token file.
+func (config *Configuration) TokenFilename() string {
+	return filepath.Join(config.ProgramFolder, "token.json")
+}
 
+// CredentialsFilename returns the path to the credentials file.
+func (config *Configuration) CredentialsFilename() string {
+	return filepath.Join(config.ProgramFolder, "credentials.json")
+}
+
+// AccessScopes are the different Gmail API permissions granted by the user
+var AccessScopes = []string{gmail.GmailLabelsScope, gmail.GmailReadonlyScope, gmail.GmailModifyScope}
+
+// Filename is the path of the configuration file.
+var Filename string
+
+// Config is the shared configuration instance.
+var Config = &Configuration{}
+
+// LoadConfig loads the configuration
+func LoadConfig() {
+	// Check if config file exists.
+	if _, err := os.Stat(Filename); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: unable to open configuration file: %v\n", err)
+		panic(err)
+	}
+
+	// Set config file.
+	viper.SetConfigFile(Filename)
+
+	// Read config.
+	if err := viper.ReadInConfig(); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: unable to read configuration file: %v\n", err)
+		panic(err)
+	}
+
+	// Get home directory.
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: could not get home directory %v\n", err)
+		panic(err)
+	}
+
+	// Set defaults.
+	viper.SetDefault("program_folder", filepath.Join(homeDir, ".eprinter"))
+
+	// Unmarshal configuration into the shared config struct.
+	if err := viper.Unmarshal(Config); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: unable to decode configuration into struct: %v\n", err)
+		panic(err)
+	}
+
+	// Validate configuration.
+	if err := Config.Validate(); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: invalid configuration: %v\n", err)
+		panic(err)
+	}
+}

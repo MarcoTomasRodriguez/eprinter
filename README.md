@@ -1,21 +1,21 @@
 <div id="top"></div>
 
 <div align="center">
-  <a href="https://github.com/marcotomasrodriguez/auto-printer">
+  <a href="https://github.com/MarcoTomasRodriguez/eprinter">
     <img src="assets/logo.svg" alt="Logo" width="80" height="80">
   </a>
-  <h2 align="center">auto-printer</h2>
+  <h2 align="center">eprinter</h2>
   <p align="center">
     Automatically print email attachments.
     <br />
-    <a href="https://github.com/marcotomasrodriguez/auto-printer"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/MarcoTomasRodriguez/eprinter"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/marcotomasrodriguez/auto-printer">View Demo</a>
+    <a href="https://github.com/MarcoTomasRodriguez/eprinter">View Demo</a>
     ·
-    <a href="https://github.com/marcotomasrodriguez/auto-printer/issues">Report Bug</a>
+    <a href="https://github.com/MarcoTomasRodriguez/eprinter/issues">Report Bug</a>
     ·
-    <a href="https://github.com/marcotomasrodriguez/auto-printer/issues">Request Feature</a>
+    <a href="https://github.com/MarcoTomasRodriguez/eprinter/issues">Request Feature</a>
   </p>
 </div>
 
@@ -40,13 +40,13 @@ Download the credentials.json from your Google dev account and paste it in the p
 Authenticate using (following the instructions):
 
 ```bash
-auto-printer auth
+eprinter setup
 ```
 
 Configure the program with the following command (writing in your own config):
 
 ```bash
-sudo nano ~/.auto-printer/config.toml
+sudo nano ~/.eprinter/config.toml
 ```
 
 Create a crontab using:
@@ -58,14 +58,14 @@ crontab -e
 Configure the process however you want, for example:
 
 ```bash
-0,30 * * * *  auto-printer service
+0,30 * * * *  eprinter
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Configuration file
 
-The configuration file is located at $HOME/.auto-printer/config.toml
+The configuration file is located at $HOME/.eprinter/config.toml
 
 ### Structure
 
@@ -79,13 +79,13 @@ printed_label_name string
 
 ```toml
 # Accept emails comming from "myemail@provider.com" and "someemail@provider.com".
-allowed_emails = [ "myemail@provider.com", "someemail@provider.com" ]
+allowed_emails = ["myemail@provider.com", "someemail@provider.com"]
 
 # Accept emails with the title "Print", "Drucken" or "Imprimir".
-allowed_email_subjects = [ "Print", "Drucken", "Imprimir" ]
+allowed_email_subjects = ["Print", "Drucken", "Imprimir"]
 
-# After the email was printed, add the label "printed" so we do no print it twice.
-printed_label_name = "printed"
+# After the email was printed, add the label "Printed" so we do no print it twice.
+printed_label = "Printed"
 ```
 
 **Note:** Subjects cannot have spaces.

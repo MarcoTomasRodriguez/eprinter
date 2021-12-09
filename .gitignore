@@ -2,4 +2,5 @@
 .DS_STORE
 credentials.json
 token.json
-auto-printer
+eprinter
+test
