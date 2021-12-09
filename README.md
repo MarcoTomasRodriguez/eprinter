@@ -32,7 +32,7 @@ For example, you can configure this program so that prints every attachment rece
 Clone this repository and install:
 
 ```bash
-go install
+go install github.com/MarcoTomasRodriguez/eprinter@latest
 ```
 
 Download the credentials.json from your Google dev account and paste it in the program folder.
